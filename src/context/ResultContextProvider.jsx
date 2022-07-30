@@ -7,9 +7,9 @@ const API_KEY = process.env.REACT_APP_API_KEY
 
 
 export const ResultContextProvider = ({children}) => {
-    const [results, setResults] = useState([])
+    const [data, setData] = useState([])
     const [loading, setLoading] = useState(false)
-    const [searchTerm, setSearchTerm] = useState('')
+    const [searchTerm, setSearchTerm] = useState('Buhari')
 
     const getResults = async (searchType) => {
         setLoading(true)
@@ -24,14 +24,22 @@ export const ResultContextProvider = ({children}) => {
             }
         });
 
-        const data = await response.json();
+        const results = await response.json();
         
-        setResults(data);
+        if(searchTerm.includes('/news')){
+            setData(results.entries)
+        }
+        else if(searchType.includes('/image')){
+            setData(results.image_results)
+        }
+        else setData(results.results)
+
+        console.log(results)
         setLoading(false);
     }
 
     return (
-        <ResultContext.Provider value={{getResults, results, searchTerm, setSearchTerm, loading}}>
+        <ResultContext.Provider value={{getResults, data, searchTerm, setSearchTerm, loading}}>
             {children}
         </ResultContext.Provider>
     )
